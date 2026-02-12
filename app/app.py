@@ -12,8 +12,8 @@ from data_collect import DataCollect
 # Load env variables
 load_dotenv()
 
-app = Flask(__name__)
 data_collect = DataCollect()
+app = Flask(__name__)
 
 @app.route("/")
 def hello_page():
@@ -38,6 +38,6 @@ def hello_page():
 if __name__ == "__main__":
     app.run()
 
-# Terminate it now
-print("Deactivating")
-data_collect.ACTIVE = False
+    # Terminate it now
+    print("Deactivating")
+    data_collect.ACTIVE = False
