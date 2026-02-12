@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 from flask import Flask
 import threading
 import sys
-print(os.getcwd())
 
 # Load own packages
 sys.path.insert(1, os.getcwd())
@@ -13,10 +12,10 @@ from data_collect import DataCollect
 # Load env variables
 load_dotenv()
 
-my_app = Flask(__name__)
+app = Flask(__name__)
 data_collect = DataCollect()
 
-@my_app.route("/")
+@app.route("/")
 def hello_page():
     ans = ""
     best_pp = -1
@@ -34,7 +33,7 @@ def hello_page():
 
 # App run for testing
 if __name__ == "__main__":
-    my_app.run()
+    app.run()
 
 # Terminate it now
 print("Deactivating")
