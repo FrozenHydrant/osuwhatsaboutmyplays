@@ -2,8 +2,12 @@ import json
 import os
 from dotenv import load_dotenv
 from flask import Flask
-from data_collect import DataCollect
 import threading
+import sys
+
+# Load own packages
+sys.path.insert(1, "")
+from data_collect import DataCollect
 
 # Load env variables
 load_dotenv()
