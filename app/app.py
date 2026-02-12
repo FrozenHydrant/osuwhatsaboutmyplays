@@ -27,7 +27,9 @@ def hello_page():
 
     return best_pp_data.to_json()
 
-#my_app.run()
+# App run for testing
+if __name__ == "__main__":
+    my_app.run()
 
 # Terminate it now
 print("Deactivating")
