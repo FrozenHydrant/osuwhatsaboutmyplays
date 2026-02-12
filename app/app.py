@@ -29,6 +29,9 @@ def hello_page():
                 best_pp_data = df.loc[df["pp"] == t_best_pp]
                 best_pp = t_best_pp
 
+    if best_pp_data is None:
+        return "No data to show right now"
+    
     return best_pp_data.to_json()
 
 # App run for testing
