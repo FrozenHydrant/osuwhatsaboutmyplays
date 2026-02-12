@@ -4,9 +4,10 @@ from dotenv import load_dotenv
 from flask import Flask
 import threading
 import sys
+print(os.getcwd())
 
 # Load own packages
-sys.path.insert(1, "")
+sys.path.insert(1, os.getcwd())
 from data_collect import DataCollect
 
 # Load env variables
