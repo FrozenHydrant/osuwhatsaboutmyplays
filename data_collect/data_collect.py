@@ -1,5 +1,4 @@
 import os
-from osu import Client
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
 import time
@@ -12,11 +11,9 @@ class DataCollect:
     SLOTS = 24 # One slot per hour = 1 day of data
     INSTANCE = None
     
-    def __init__(self):
+    def __init__(self, osu_client):
         if DataCollect.INSTANCE is None:
-            client_id = os.getenv('CLIENT_ID')
-            client_s = os.getenv('CLIENT_SECRET')
-            self.CLIENT = Client.from_credentials(client_id, client_s, "http://localhost:8080")
+            self.CLIENT = osu_client
             # 24 Boxes for hourly data
             self.DATA = []
             for i in range(DataCollect.SLOTS):
@@ -74,7 +71,3 @@ class DataCollect:
                 if not self.ACTIVE:
                     return        
 
-#if __name__ == "__main__":
-#    load_dotenv()
-#    my_data_collection = DataCollect()
-#    my_data_collection.main()

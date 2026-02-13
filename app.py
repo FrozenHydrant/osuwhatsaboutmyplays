@@ -1,5 +1,6 @@
 import json
 import os
+from osu import Client
 from dotenv import load_dotenv
 from flask import Flask
 import threading
@@ -9,10 +10,13 @@ import sys
 sys.path.insert(1, os.getcwd())
 from data_collect import DataCollect
 
-# Load env variables
+# Load env variables and create the Client
 load_dotenv()
 
-data_collect = DataCollect()
+client_id = os.getenv("CLIENT_ID")
+client_s = os.getenv("CLIENT_SECRET")
+CLIENT = Client.from_credentials(client_id, client_s, "http://localhost:8080")
+data_collect = DataCollect(CLIENT)
 app = Flask(__name__)
 
 @app.route("/")
