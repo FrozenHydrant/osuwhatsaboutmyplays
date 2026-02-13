@@ -5,10 +5,13 @@ from dotenv import load_dotenv
 from flask import Flask
 import threading
 import sys
+import pandas as pd
+import numpy as np
 
 # Load own packages
 sys.path.insert(1, os.getcwd())
 from data_collect import DataCollect
+from colorfinity import Colorfinity
 
 # Load env variables and create the Client
 load_dotenv()
@@ -21,22 +24,19 @@ app = Flask(__name__)
 
 @app.route("/")
 def hello_page():
-    ans = ""
-    best_pp = -1
-    best_pp_data = None
+    # We prepare to concatenate all data from all storage slots
+    # TODO: move image generation somewhere else..
+    all_times = np.empty(0)
+    all_pp = np.empty(0)
     for df in data_collect.DATA:
-        if len(df) > 0:
-            t_best_pp = df.max().loc["pp"]
-            if t_best_pp > best_pp:
-        
-                # Update the info
-                best_pp_data = df.loc[df["pp"] == t_best_pp]
-                best_pp = t_best_pp
+        t = df["date"].to_numpy()
+        pp = df["pp"].to_numpy()
 
-    if best_pp_data is None:
-        return "No data to show right now"
-    
-    return best_pp_data.to_json()
+        all_times = np.concatenate([all_times, t])
+        all_pp = np.concatenate([all_pp, pp])
+
+    ans = Colorfinity.time_scattered(all_times, all_pp, "pp vs Date", "pp")
+    return f"<img src='data:image/png;base64,{ans}'/>"
 
 # App run for testing
 if __name__ == "__main__":
