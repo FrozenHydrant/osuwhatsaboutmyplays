@@ -22,19 +22,44 @@ CLIENT = Client.from_credentials(client_id, client_s, "http://localhost:8080")
 data_collect = DataCollect(CLIENT)
 app = Flask(__name__)
 
+def collect_data(name):
+    all_times = np.empty(0).astype(np.datetime64)
+    all_data = np.empty(0)
+
+    for i in range(data_collect.SLOTS):
+        my_csv_path = os.path.join(os.getcwd(), "data", str(i) + ".csv")
+       
+        # Then read it into our dataframe
+        df = None
+        try:
+            with open(my_csv_path, "r") as data_file:
+                df = pd.read_csv(data_file)
+        except:
+            continue
+
+        # Only proceed if data is available
+        if df is None or len(df) < 1:
+            continue
+
+        # Convert date column before we want to plot it
+        df["date"] = pd.to_datetime(df["date"])
+        
+        t = df["date"].to_numpy()
+        data = df[name].to_numpy()
+
+        all_times = np.concatenate([all_times, t])
+        all_data = np.concatenate([all_data, data])
+    return (all_times, all_data)
+
 @app.route("/")
 def hello_page():
     # We prepare to concatenate all data from all storage slots
-    # TODO: move image generation somewhere else..
-    all_times = np.empty(0)
-    all_pp = np.empty(0)
-    for df in data_collect.DATA:
-        t = df["date"].to_numpy()
-        pp = df["pp"].to_numpy()
+    all_times, all_pp = collect_data("pp")
 
-        all_times = np.concatenate([all_times, t])
-        all_pp = np.concatenate([all_pp, pp])
-
+    # Only proceed if data is available
+    if len(all_times) < 1:
+        return "No data available"
+    
     ans = Colorfinity.time_scattered(all_times, all_pp, "pp vs Date", "pp")
     return f"<img src='data:image/png;base64,{ans}'/>"
 

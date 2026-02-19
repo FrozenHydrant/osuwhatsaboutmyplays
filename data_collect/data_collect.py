@@ -5,6 +5,7 @@ import time
 import pandas as pd
 import numpy as np
 import threading
+import json
 
 class DataCollect:
     #CONSTANTS
@@ -14,10 +15,7 @@ class DataCollect:
     def __init__(self, osu_client):
         if DataCollect.INSTANCE is None:
             self.CLIENT = osu_client
-            # 24 Boxes for hourly data
-            self.DATA = []
-            for i in range(DataCollect.SLOTS):
-                self.DATA.append(pd.DataFrame(columns=["date", "id", "pp"]))
+            self.DATAFRAME = pd.DataFrame(columns=["date", "id", "pp"])
 
             # Start on a new thread
             self.ACTIVE = True
@@ -31,9 +29,10 @@ class DataCollect:
     def _start(self):
         my_curse = None
         current_h = None
-        data_pos = 0
         
         while True:
+
+            # Get the scores
             osu_get_all_scores_result = self.CLIENT.get_all_scores("osu", cursor=my_curse)
             all_my_scores = osu_get_all_scores_result.scores
             my_curse = osu_get_all_scores_result.cursor            
@@ -49,19 +48,23 @@ class DataCollect:
                     pass
                 elif current_h != score.ended_at.hour:
                     # New hour = go to the next slot
-                    # But wrap around if no space
-                    data_pos += 1
-                    data_pos %= self.SLOTS
-                    #print(data_pos, "New data pos")
+                    # But first write the current data
+                    with open(os.path.join(os.getcwd(), "data", str(current_h) + ".csv"), "w") as save_file:
+                        save_file.write(self.DATAFRAME.to_csv())
+                    
                     # Destroy the previous data we had
-                    self.DATA[data_pos] = pd.DataFrame(columns=["date", "id", "pp"])
+                    self.DATAFRAME = pd.DataFrame(columns=["date", "id", "pp"])
                     
                 current_h = score.ended_at.hour
 
                 # Add score info to the Data list
                 # https://www.geeksforgeeks.org/pandas/how-to-add-one-row-in-an-existing-pandas-dataframe/
                 new_row = pd.DataFrame(score_info)
-                self.DATA[data_pos] = pd.concat([self.DATA[data_pos], new_row], ignore_index=True)
+                self.DATAFRAME = pd.concat([self.DATAFRAME, new_row], ignore_index=True)
+
+                 # Minutely save
+                with open(os.path.join(os.getcwd(), "data", str(current_h) + ".csv"), "w") as save_file:
+                    save_file.write(self.DATAFRAME.to_csv())
                             
             print("Documented new scores, now sleeping...")
 
