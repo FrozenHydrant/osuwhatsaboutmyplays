@@ -30,4 +30,22 @@ class Colorfinity:
         # Done
         return my_data
 
-        
+    def time_boxplot(y_stats, title, y_label):
+        # Create a figure
+        my_fig = Figure(figsize=Colorfinity.SIZE)
+
+        # Customize the axes
+        my_axe = my_fig.subplots()
+        my_axe.set_title(title)
+        my_axe.set_ylabel(y_label)
+        my_axe.set_xlabel("Date")
+
+        # Create the plot
+        my_axe.bxp(y_stats, showfliers=False)
+
+        # Then we convert the plot into nice bytes
+        my_buf = BytesIO()
+        my_fig.savefig(my_buf, format="png")
+        my_data = base64.b64encode(my_buf.getbuffer()).decode("ascii")
+
+        return my_data
