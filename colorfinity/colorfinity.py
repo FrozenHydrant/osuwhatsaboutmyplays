@@ -22,6 +22,11 @@ class Colorfinity:
         # Create the plot
         my_axe.scatter(x, y, c=y, marker='.', linestyle='None')
 
+        # Assume not many points exist
+        i = 0
+        for i in range(len(x)):
+            my_axe.text(x[i], y[i]+50, y[i])
+
         # Then we convert the plot into nice bytes
         my_buf = BytesIO()
         my_fig.savefig(my_buf, format="png")

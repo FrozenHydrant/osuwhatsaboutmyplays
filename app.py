@@ -85,6 +85,8 @@ def summary_data(name):
         cleared_time = pd.Timestamp(time.year, time.month, time.day, time.hour)
         
         data = get_summary(df[name].to_numpy(), str(cleared_time))
+        data["time"] = cleared_time
+        
         all_data.append(data)
     return all_data
 
@@ -97,7 +99,12 @@ def hello_page():
     if len(all_pp_data) < 1:
         return "No data available"
 
-    ans = Colorfinity.time_boxplot(all_pp_data, "pp vs Time", "pp")
+    # Only need the max data
+    pp_max_data = [info["whishi"] for info in all_pp_data]
+    pp_max_times = [info["time"] for info in all_pp_data]
+    print(pp_max_data, pp_max_times)
+
+    ans = Colorfinity.time_scattered(pp_max_times, pp_max_data, "Highest PP play per hour", "pp")
     return f"<img src='data:image/png;base64,{ans}'/>"
 
 # App run for testing
