@@ -102,7 +102,7 @@ def hello_page():
     # Only need the max data
     pp_max_data = [info["whishi"] for info in all_pp_data]
     pp_max_times = [info["time"] for info in all_pp_data]
-    print(pp_max_data, pp_max_times)
+    #print(pp_max_data, pp_max_times)
 
     ans = Colorfinity.time_scattered(pp_max_times, pp_max_data, "Highest PP play per hour", "pp")
     return f"<img src='data:image/png;base64,{ans}'/>"
